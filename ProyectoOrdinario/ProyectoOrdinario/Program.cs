@@ -1,23 +1,18 @@
 ﻿using ProyectoOrdinario.Enumeradores;
 using ProyectoOrdinario.Interfaces;
+using System.Linq;
+using System.Collections.Generic;
+using ProyectoOrdinario;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ProyectoOrdinario
 {
     class Program
     {
+        
         static void Main()
         {
             DeckDeCartas deckDeCartas = new DeckDeCartas();
-            #region Crear 7 Jugadores
-            Jugador jugador1 = new Jugador();
-            Jugador jugador2 = new Jugador();
-            Jugador jugador3 = new Jugador();
-            Jugador jugador4 = new Jugador();
-            Jugador jugador5 = new Jugador();
-            Jugador jugador6 = new Jugador();
-            Jugador jugador7 = new Jugador();
-            #endregion
-
             SeleccionJuego();
         }
         public static void SeleccionJuego()
@@ -34,7 +29,7 @@ namespace ProyectoOrdinario
                     }
                 case "2":
                     {
-                        Juego.ObtenerJugadoresYNombres();
+                        Juego.IniciarJuego();
                         Juego.MostrarPuntuaje();
                         break;
                     }
@@ -53,6 +48,7 @@ namespace ProyectoOrdinario
             }
         }
 
+        #region "parte comentada que no se para que es xd"
         /*while (true)
         {
             try
@@ -85,35 +81,55 @@ namespace ProyectoOrdinario
                 Console.WriteLine("Inserte unicamente numeros.");
             }
         }*/
+        #endregion
     }
 }
+
+//Propiedades basicas del juego
 public class Juego
 {
+    #region Crear 7 Jugadores
+    Jugador jugador1 = new Jugador("",0);
+    Jugador jugador2 = new Jugador("", 0);
+    Jugador jugador3 = new Jugador("", 0);
+    Jugador jugador4 = new Jugador("", 0);
+    Jugador jugador5 = new Jugador("", 0);
+    Jugador jugador6 = new Jugador("", 0);
+    Jugador jugador7 = new Jugador("", 0);
+    #endregion
+    // Variables básicas del juego
     int NumJugadores;
     string[] NombresJugadores = new string[7];
     IDealer Dealer { get; }
     bool JuegoTerminado { get; }
-    void AgregarJugador(IJugador jugador)
+
+    // Acciones que pueden pasar en el juego
+    public void AgregarJugador(IJugador jugador)
+    {
+        
+    }
+    public void IniciarJuego()
+    {
+        ObtenerJugadoresYNombres();
+    }
+    public void JugarRonda()
     {
 
     }
-    void IniciarJuego()
+    public void MostrarGanador()
     {
 
+        Console.WriteLine("El ganador es : " + NombresJugadores);
     }
-    void JugarRonda()
-    {
 
-    }
-    void MostrarGanador()
-    {
-
-    }
+    //Iniciador del juego
     public void ObtenerJugadoresYNombres()
     {
         Console.WriteLine("Cuantos jugadores?");
         try
         {
+
+            // exepcion en caso de que el numero no sea valido
             NumJugadores = Convert.ToInt32(Console.ReadLine());
             if (NumJugadores > 7 || NumJugadores < 1)
             {
@@ -130,13 +146,15 @@ public class Juego
                 }
             }
         }
-        catch (FormatException)
+        catch (FormatException) // exepcion en caso de poner letras en la seccion de numeros
         {
             Console.WriteLine("Inserte solamente numeros.");
             Console.WriteLine("---\n");
             ObtenerJugadoresYNombres();
         }
     }
+
+    // Imprime el puntaje de cada jugador
     public void MostrarPuntuaje()
     {
         Console.WriteLine("\n-= Puntuaje actual =-");
@@ -147,8 +165,11 @@ public class Juego
         Console.WriteLine("-=   Ronda : #1    =-\n");
     }
 }
+
+// Objeto jugador
 public class Jugador
 {
+    // Región que crea una lista que contiene las cartas por cada jugador
     #region Crear Manos Jugadores 1-7
     public List<Carta> ManoJugador1 = new List<Carta>();
     public List<Carta> ManoJugador2 = new List<Carta>();
@@ -158,53 +179,62 @@ public class Jugador
     public List<Carta> ManoJugador6 = new List<Carta>();
     public List<Carta> ManoJugador7 = new List<Carta>();
     #endregion
-    string JugadorName;
-    public Jugador()
-    {
 
-    }
+    string JugadorName;
+    int PuntajeDeLasCartas;
+
+    // Acciones que puede realizar el jugador
     void RealizarJugada()
     {
-
+        Console.WriteLine("Decidio realizar una jugada, agarro una nueva carta ");
     }
     void ObtenerCartas(List<ICarta> cartas)
     {
 
     }
-    /* ICarta DevolverCarta(int indiceCarta)
+     void MostrarCartas()
      {
 
      }
-     List<ICarta> DevolverTodasLasCartas()
+     void MostrarCarta(int indiceCarta)
      {
 
      }
-     List<ICarta> MostrarCartas()
-     {
 
-     }
-     ICarta MostrarCarta(int indiceCarta)
-     {
-
-     }*/
+    public Jugador(string JugadorName, int PuntajeDeLasCartas)
+    {
+        this.JugadorName = JugadorName;
+        this.PuntajeDeLasCartas = PuntajeDeLasCartas;
+    }
 }
+
+//Objeto dealer
 public class Dealer
 {
+    // esta lista guarda las cartas que posee el dealer
     List<ICarta> RepartirCartas(int numeroDeCartas)
     {
         return new List<ICarta>();
     }
+
+    //acciones que puede realizar el dealer
     void RecogerCartas(List<ICarta> cartas)
     {
 
     }
     void BarajearDeck()
     {
+        List<Carta> DeckLista =  DeckDeCartas.DeckLista;
 
+        var random = new Random();
+        var BarajaRevuelta = DeckLista.OrderBy(item => random.Next());
     }
 }
+
+//Objeto Baraja de Cartas
 public class DeckDeCartas : IDeckDeCartas
 {
+    //sistema para crear la baraja asignando valoras y simbolos
     public DeckDeCartas()
     {
         for (int i = 0; i <= 3; i++)
@@ -216,7 +246,10 @@ public class DeckDeCartas : IDeckDeCartas
         }
     }
 
-    public List<Carta> DeckLista = new List<Carta>();
+    // la baraja esta guardada en esta lista
+    static public List<Carta> DeckLista = new List<Carta>();
+    
+    //escribe la carta en la consola
     public void LeerCartas()
     {
         foreach (Carta carta in DeckLista)
@@ -225,14 +258,11 @@ public class DeckDeCartas : IDeckDeCartas
         }
     }
 
+    //Acciones que puede realizar la baraja
     public void BarajearDeck()
     {
         var random = new Random();
-        int n = DeckLista.Count;
-        while (n > 1)
-        {
-            n--;
-        }
+        var BarajaRevuelta = DeckLista.OrderBy(item => random.Next());
     }
 
     public ICarta VerCarta(int indiceCarta)
@@ -255,9 +285,13 @@ public class DeckDeCartas : IDeckDeCartas
 
     }
 }
+
+// Objeto Carta
 public class Carta : ICarta
 {
     private ValoresCartasEnum _valor;
+
+    // tira exepcion en caso de que el valor de la carta no sea valido
     public ValoresCartasEnum Valor
     {
         get { return _valor; }
@@ -269,6 +303,8 @@ public class Carta : ICarta
     }
 
     private FigurasCartasEnum _figura;
+
+    // tira exepcion en caso de que el simbolo de la carta no se valido
     public FigurasCartasEnum Figura
     {
         get { return _figura; }
@@ -279,6 +315,7 @@ public class Carta : ICarta
         }
     }
 
+    // Constructores del objeto carta
     public Carta(ValoresCartasEnum valor, FigurasCartasEnum figura)
     {
         this.Valor = valor;
