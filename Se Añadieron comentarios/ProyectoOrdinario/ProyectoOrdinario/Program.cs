@@ -1,18 +1,24 @@
 ﻿using ProyectoOrdinario.Enumeradores;
 using ProyectoOrdinario.Interfaces;
-using System.Linq;
-using System.Collections.Generic;
-using ProyectoOrdinario;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ProyectoOrdinario
 {
     class Program
     {
-        
         static void Main()
         {
             DeckDeCartas deckDeCartas = new DeckDeCartas();
+            #region Crear 7 Jugadores
+            Jugador jugador1 = new Jugador();
+            Jugador jugador2 = new Jugador();
+            Jugador jugador3 = new Jugador();
+            Jugador jugador4 = new Jugador();
+            Jugador jugador5 = new Jugador();
+            Jugador jugador6 = new Jugador();
+            Jugador jugador7 = new Jugador();
+            #endregion
+
+
             SeleccionJuego();
         }
         public static void SeleccionJuego()
@@ -29,7 +35,7 @@ namespace ProyectoOrdinario
                     }
                 case "2":
                     {
-                        Juego.IniciarJuego();
+                        Juego.ObtenerJugadoresYNombres();
                         Juego.MostrarPuntuaje();
                         break;
                     }
@@ -88,15 +94,6 @@ namespace ProyectoOrdinario
 //Propiedades basicas del juego
 public class Juego
 {
-    #region Crear 7 Jugadores
-    Jugador jugador1 = new Jugador("",0);
-    Jugador jugador2 = new Jugador("", 0);
-    Jugador jugador3 = new Jugador("", 0);
-    Jugador jugador4 = new Jugador("", 0);
-    Jugador jugador5 = new Jugador("", 0);
-    Jugador jugador6 = new Jugador("", 0);
-    Jugador jugador7 = new Jugador("", 0);
-    #endregion
     // Variables básicas del juego
     int NumJugadores;
     string[] NombresJugadores = new string[7];
@@ -104,19 +101,19 @@ public class Juego
     bool JuegoTerminado { get; }
 
     // Acciones que pueden pasar en el juego
-    public void AgregarJugador(IJugador jugador)
-    {
-        
-    }
-    public void IniciarJuego()
-    {
-        ObtenerJugadoresYNombres();
-    }
-    public void JugarRonda()
+    void AgregarJugador(IJugador jugador)
     {
 
     }
-    public void MostrarGanador()
+    void IniciarJuego()
+    {
+
+    }
+    void JugarRonda()
+    {
+
+    }
+    void MostrarGanador()
     {
 
         Console.WriteLine("El ganador es : " + NombresJugadores);
@@ -128,8 +125,6 @@ public class Juego
         Console.WriteLine("Cuantos jugadores?");
         try
         {
-
-            // exepcion en caso de que el numero no sea valido
             NumJugadores = Convert.ToInt32(Console.ReadLine());
             if (NumJugadores > 7 || NumJugadores < 1)
             {
@@ -146,7 +141,7 @@ public class Juego
                 }
             }
         }
-        catch (FormatException) // exepcion en caso de poner letras en la seccion de numeros
+        catch (FormatException)
         {
             Console.WriteLine("Inserte solamente numeros.");
             Console.WriteLine("---\n");
@@ -179,33 +174,38 @@ public class Jugador
     public List<Carta> ManoJugador6 = new List<Carta>();
     public List<Carta> ManoJugador7 = new List<Carta>();
     #endregion
-
     string JugadorName;
     int PuntajeDeLasCartas;
+    public Jugador()
+    {
+        
+    }
 
     // Acciones que puede realizar el jugador
     void RealizarJugada()
     {
-        Console.WriteLine("Decidio realizar una jugada, agarro una nueva carta ");
+
     }
     void ObtenerCartas(List<ICarta> cartas)
     {
 
     }
-     void MostrarCartas()
+    /* ICarta DevolverCarta(int indiceCarta)
      {
 
      }
-     void MostrarCarta(int indiceCarta)
+     List<ICarta> DevolverTodasLasCartas()
      {
 
      }
+     List<ICarta> MostrarCartas()
+     {
 
-    public Jugador(string JugadorName, int PuntajeDeLasCartas)
-    {
-        this.JugadorName = JugadorName;
-        this.PuntajeDeLasCartas = PuntajeDeLasCartas;
-    }
+     }
+     ICarta MostrarCarta(int indiceCarta)
+     {
+
+     }*/
 }
 
 //Objeto dealer
@@ -224,39 +224,27 @@ public class Dealer
     }
     void BarajearDeck()
     {
-        List<Carta> DeckLista =  DeckDeCartas.DeckLista;
 
-        var random = new Random();
-        var BarajaRevuelta = DeckLista.OrderBy(item => random.Next());
     }
 }
 
 //Objeto Baraja de Cartas
 public class DeckDeCartas : IDeckDeCartas
 {
-    // la baraja esta guardada en esta lista
-    static public List<Carta> DeckLista = new List<Carta>();
-
     //sistema para crear la baraja asignando valoras y simbolos
     public DeckDeCartas()
     {
-        string[] Simbolos = { "Hearts", "Diamonds", "Clubs", "Spades" };
-        string[] valores = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
-
-        foreach (var Simbolo in Simbolos)
+        for (int i = 0; i <= 3; i++)
         {
-            //asignar simbolos
-            foreach (var rango in valores)
+            for (int j = 1; j <= 13; j++)
             {
-                int value = (rango == "Jack" || rango == "Queen" || rango == "King") ? 10 :
-                            (rango == "Ace") ? 11 : int.Parse(rango);
-
-                DeckLista.Add(new Carta { simbolos = Simbolo, Rango = rango, valores = value });
+                DeckLista.Add(new Carta(j, i));
             }
         }
     }
 
-    
+    // la baraja esta guardada en esta lista
+    public List<Carta> DeckLista = new List<Carta>();
     
     //escribe la carta en la consola
     public void LeerCartas()
@@ -271,7 +259,11 @@ public class DeckDeCartas : IDeckDeCartas
     public void BarajearDeck()
     {
         var random = new Random();
-        var BarajaRevuelta = DeckLista.OrderBy(item => random.Next());
+        int n = DeckLista.Count;
+        while (n > 1)
+        {
+            n--;
+        }
     }
 
     public ICarta VerCarta(int indiceCarta)
@@ -299,9 +291,6 @@ public class DeckDeCartas : IDeckDeCartas
 public class Carta : ICarta
 {
     private ValoresCartasEnum _valor;
-    public string simbolos { get; set; }
-    public string Rango { get; set; }
-    public int valores { get; set; }
 
     // tira exepcion en caso de que el valor de la carta no sea valido
     public ValoresCartasEnum Valor
@@ -328,7 +317,16 @@ public class Carta : ICarta
     }
 
     // Constructores del objeto carta
- 
+    public Carta(ValoresCartasEnum valor, FigurasCartasEnum figura)
+    {
+        this.Valor = valor;
+        this.Figura = figura;
+    }
+    public Carta(int valor, int figura)
+    {
+        this.Valor = (ValoresCartasEnum)valor;
+        this.Figura = (FigurasCartasEnum)figura;
+    }
     public override string ToString()
     {
         return $"{this.Valor} de {this.Figura}";
